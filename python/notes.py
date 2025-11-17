@@ -1,10 +1,29 @@
 import sys
 import os
 import yaml
+from datetime import datetime
+
 
 def help_mesg():
     help_string = 'Notes know hows to "help"'
     print(help_string)
+
+def save_note(filename, title, content, tags):
+    timestamp = datetime.now().isoformat() +'Z'
+    metadata={
+        'title': title,
+        'created': timestamp,
+        'modified': timestamp,
+        'tags':tags
+    }
+    yaml_string = yaml.dump(metadata)
+    full_content = '---\n' + yaml_string + '---n\n' + content
+
+    with open(f'notes/{filename}.note', 'w') as f:
+        f.write(full_content)
+
+
+
 
 def list_files():
     print("all the files")

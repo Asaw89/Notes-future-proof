@@ -1,4 +1,4 @@
-from notes import read_note, list_files
+from notes import read_note, list_files, save_note
 
 def test_read_note_returns_content():
     result = read_note('test-notes/sample-note-1.md')
@@ -22,3 +22,15 @@ def test_list_files_returns_note_files():
     # Check that all files end with .note
     for file in files:
         assert file.endswith('.note')
+
+def test_save_note_creates_file_with_yaml():
+    # Save a new note
+    save_note('test-note', 'My Test Note', 'This is test content', ['testing', 'example'])
+
+    # Read it back
+    result = read_note('notes/test-note.note')
+
+    # Verify the metadata
+    assert result['metadata']['title'] == 'My Test Note'
+    assert result['metadata']['tags'] == ['testing', 'example']
+    assert result['content'] == 'This is test content'
