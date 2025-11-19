@@ -76,18 +76,21 @@ def main():
             print("\nYour notes:")
             for file in files:
                 print(f"  - {file}")
+            input("\nPress Enter to return to menu...")
 
         elif choice == '2':
             # Create note
             filename, title, content, tags = collect_note()
             save_note(filename, title, content, tags)
             print(f"\nNote '{filename}.note' created successfully!")
+            input("\nPress Enter to return to menu...")  # Remove the result line above this!
 
         elif choice == '3':
             # Read note
             files = list_files()
             if not files:
                 print("\nNo notes found!")
+                input("\nPress Enter to return to menu...")
             else:
                 print("\nAvailable notes:")
                 for i, file in enumerate(files, 1):
@@ -104,14 +107,18 @@ def main():
                         print(f"Created: {result['metadata']['created']}")
                         print(f"Tags: {result['metadata'].get('tags', [])}")
                         print(f"\n{result['content']}")
+                        input("\nPress Enter to return to menu...")  # Add it HERE!
                     else:
                         print("\nInvalid note number!")
+                        input("\nPress Enter to return to menu...")
                 except ValueError:
                     print("\nPlease enter a valid number!")
-
+                    input("\nPress Enter to return to menu...")
         elif choice == '4':
             # Delete note
             print("\nDelete note - coming soon!")
+            print(f"\n{result['content']}")
+            input("\nPress Enter to return to menu...")
 
         elif choice == '5':
             # Exit
