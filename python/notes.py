@@ -87,8 +87,9 @@ def display_menu():
     print("2. Create note")
     print("3. Read note")
     print("4. Delete note")
-    print("5. Help")
-    print("6. Exit")
+    print("5. Stats")
+    print("6. Help")
+    print("7. Exit")
     print("====================")
 
 def main():
@@ -170,11 +171,21 @@ def main():
                 input("\nPress Enter to return to menu...")
 
         elif choice == '5':
+            #stats
+            stats = get_stats()
+            print("\n===Note Statistics===")
+            print(f"Total Notes: {stats['total_notes']}")
+            print(f"Unique tags: {stats['total_tags']}")
+            if stats['all_tags']:
+                print(f"All tags used: {','.join(set(stats['all_tags']))}")
+            input("\nPress Enter to return to menu...")
+
+        elif choice == '6':
             # Help
             help_message()
             input("\nPress Enter to return to menu...")
 
-        elif choice == '6':
+        elif choice == '7':
             # Exit
             print("\nGoodbye!")
             break
