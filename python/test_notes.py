@@ -1,4 +1,4 @@
-from notes import read_note, list_files, save_note
+from notes import read_note, list_files, save_note, delete_note
 
 def test_read_note_returns_content():
     result = read_note('test-notes/sample-note-1.md')
@@ -34,3 +34,18 @@ def test_save_note_creates_file_with_yaml():
     assert result['metadata']['title'] == 'My Test Note'
     assert result['metadata']['tags'] == ['testing', 'example']
     assert result['content'] == 'This is test content'
+
+def test_delete_note_removes_file():
+    # First, create a test note
+    save_note('temp-delete-test', 'Delete Test', 'This will be deleted', [])
+
+    # Verify it exists
+    files = list_files()
+    assert 'temp-delete-test.note' in files
+
+    # Delete it
+    delete_note('temp-delete-test')
+
+    # Verify it's gone
+    files = list_files()
+    assert 'temp-delete-test.note' not in files

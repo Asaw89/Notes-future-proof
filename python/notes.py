@@ -56,6 +56,10 @@ def read_note(n):
         'content': content_part
     }
 
+def delete_note(filename):
+    filepath = f'notes/{filename}.note'
+    os.remove(filepath)
+
 def display_menu():
     print("\n=== Notes Manager ===")
     print("1. List notes")
