@@ -30,7 +30,7 @@ def save_note(filename, title, content, tags): #We need to take the information 
         'tags':tags
     }
     yaml_string = yaml.dump(metadata)#convert to YAML by going from dictionary -> YAML
-    full_content = '---\n' + yaml_string + '---\n\n' + content #We construct the contents together like Lego Blocks
+    full_content = '---\n' + yaml_string + '---\n\n' + content #We construct the contents together like Lego Blocks. Kris suggested '---' to make YAMLs look nice.
 
     with open(f'{ROOT_FOLDER}/{filename}.note', 'w') as f:#Creates the file path and Writes it
         f.write(full_content)# Writes YAML + Content
