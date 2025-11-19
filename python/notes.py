@@ -4,7 +4,7 @@ import yaml
 from datetime import datetime
 
 
-def help_mesg():
+def help_message():
     help_string = 'Notes know hows to "help"'
     print(help_string)
 
@@ -29,7 +29,7 @@ def save_note(filename, title, content, tags):
         'tags':tags
     }
     yaml_string = yaml.dump(metadata)
-    full_content = '---\n' + yaml_string + '---n\n' + content
+    full_content = '---\n' + yaml_string + '---\n\n' + content
 
     with open(f'notes/{filename}.note', 'w') as f:
         f.write(full_content)
@@ -66,7 +66,8 @@ def display_menu():
     print("2. Create note")
     print("3. Read note")
     print("4. Delete note")
-    print("5. Exit")
+    print("5. Help")
+    print("6. Exit")
     print("====================")
 
 def main():
@@ -118,13 +119,41 @@ def main():
                 except ValueError:
                     print("\nPlease enter a valid number!")
                     input("\nPress Enter to return to menu...")
+
         elif choice == '4':
             # Delete note
-            print("\nDelete note - coming soon!")
-            print(f"\n{result['content']}")
-            input("\nPress Enter to return to menu...")
+            files = list_files()
+            if not files:
+                print("\nNo notes found!")
+                input("\nPress Enter to return to menu...")
+            else:
+                print("\nAvailable notes:")
+                for i, file in enumerate(files, 1):
+                    print(f"  {i}. {file}")
+
+                note_choice = input("\nEnter note number to delete: ")
+                try:
+                    index = int(note_choice) - 1
+                    if 0 <= index < len(files):
+                        filename = files[index].replace('.note', '')
+                        confirm = input(f"Are you sure you want to delete '{filename}.note'? (y/n): ")
+                        if confirm.lower() == 'y':
+                            delete_note(filename)
+                            print(f"\nNote '{filename}.note' deleted successfully!")
+                        else:
+                            print("\nDeletion cancelled.")
+                    else:
+                        print("\nInvalid note number!")
+                except ValueError:
+                    print("\nPlease enter a valid number!")
+                input("\nPress Enter to return to menu...")
 
         elif choice == '5':
+            # Help
+            help_message()
+            input("\nPress Enter to return to menu...")
+
+        elif choice == '6':
             # Exit
             print("\nGoodbye!")
             break

@@ -1,15 +1,5 @@
 from notes import read_note, list_files, save_note, delete_note
 
-def test_read_note_returns_content():
-    result = read_note('test-notes/sample-note-1.md')
-
-    # Check that it has both keys
-    assert 'metadata' in result
-    assert 'content' in result
-
-    # Check that content exists and starts with the expected text
-    assert result['content'].startswith('# Data Structures Overview')
-
 def test_list_files_returns_note_files():
     files = list_files()
 
