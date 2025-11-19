@@ -56,6 +56,15 @@ def read_note(n):
         'content': content_part
     }
 
+def display_menu():
+    print("\n=== Notes Manager ===")
+    print("1. List notes")
+    print("2. Create note")
+    print("3. Read note")
+    print("4. Delete note")
+    print("5. Exit")
+    print("====================")
+
 def main():
     if len(sys.argv) > 1:
         cmd = sys.argv[1]
