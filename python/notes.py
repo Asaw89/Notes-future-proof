@@ -56,6 +56,24 @@ def read_note(n): #This function reads a note file and separates it into two par
         'content': content_part
     }
 
+def edit_note(filename, title=None, content=None,tags=None ):#Read the existing note
+    filepath = f'notes/{filename}.note'
+    result=read_note(filepath)
+
+    if title is not None: #update the fields
+        result['metadata']['title']= title
+    if content is not None:
+        result['metadata']['content']= content
+    if tags is not None:
+        result['metadata']['tags']=tags
+    result['metadata']['modified']=datetime.now().isoformat() + 'Z' #updates the timestamp
+
+    yaml_string=yaml.dump(result['metadata']) #converts to YAML and back then puts everything together like lego blocks
+    full_content= '---\n' + yaml_string + '---\n\n' + result['content']
+
+    with open(filepath, 'w') as f: #writes the new note.
+        f.write(full_content)
+
 def delete_note(filename):
     filepath = f'notes/{filename}.note'
     os.remove(filepath)

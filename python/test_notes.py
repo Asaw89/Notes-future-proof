@@ -1,4 +1,4 @@
-from notes import read_note, list_files, save_note, delete_note, get_stats
+from notes import read_note, list_files, save_note, delete_note, get_stats, edit_note
 
 def test_list_files_returns_note_files():
     files = list_files()
@@ -47,3 +47,18 @@ def test_stats_returns_note_count():
     assert 'total_notes' in stats
     assert isinstance(stats['total_notes'], int)
     assert stats['total_notes'] >= 0
+
+def test_edit_note_updates_content():
+    # Create a test note
+    save_note('edit-test', 'Original Title', 'Original content', ['test'])
+
+    # Edit it
+    edit_note('edit-test', title='Updated Title', content='New content', tags=['updated'])
+
+    # Read it back
+    result = read_note('notes/edit-test.note')
+
+    # Verify changes
+    assert result['metadata']['title'] == 'Updated Title'
+    assert result['content'] == 'New content'
+    assert result['metadata']['tags'] == ['updated']
