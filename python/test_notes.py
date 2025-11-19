@@ -1,4 +1,5 @@
-from notes import read_note, list_files, save_note, delete_note, get_stats, edit_note
+from notes import read_note, list_files, save_note, delete_note, get_stats, edit_note, search_notes
+from Configurator import ROOT_FOLDER
 
 def test_list_files_returns_note_files():
     files = list_files()
@@ -18,7 +19,7 @@ def test_save_note_creates_file_with_yaml():
     save_note('test-note', 'My Test Note', 'This is test content', ['testing', 'example'])
 
     # Read it back
-    result = read_note('ROOT_FOLDER/test-note.note')
+    result = read_note(f'{ROOT_FOLDER}/test-note.note')
 
     # Verify the metadata
     assert result['metadata']['title'] == 'My Test Note'
@@ -56,9 +57,22 @@ def test_edit_note_updates_content():
     edit_note('edit-test', title='Updated Title', content='New content', tags=['updated'])
 
     # Read it back
-    result = read_note('ROOT_FOLDER/edit-test.note')
+    result = read_note(f'{ROOT_FOLDER}/edit-test.note')
 
     # Verify changes
     assert result['metadata']['title'] == 'Updated Title'
     assert result['content'] == 'New content'
     assert result['metadata']['tags'] == ['updated']
+
+def test_search_notes_finds_matching_notes():
+    # Create some test notes
+    save_note('search-test-1', 'Python Programming', 'Learn about functions', ['python', 'coding'])
+    save_note('search-test-2', 'Java Basics', 'Learn about classes', ['java', 'coding'])
+    save_note('search-test-3', 'Cooking Tips', 'How to bake bread', ['cooking', 'recipes'])
+
+    # Search for 'python'
+    results = search_notes('python')
+
+    # Should find the first note
+    assert len(results) > 0
+    assert any('search-test-1.note' in result for result in results)

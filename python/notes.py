@@ -99,17 +99,46 @@ def get_stats():
         'all_tags' : all_tags
     }
 
+def search_notes(query):
+    files = list_files()
+    matching_files = []
+
+    query_lower = query.lower()  # Make search case-insensitive
+
+    for file in files:
+        try:
+            result = read_note(f'{ROOT_FOLDER}/{file}')
+            \
+            # Search in title
+            title = result['metadata'].get('title', '').lower()
+
+            # Search in tags
+            tags = result['metadata'].get('tags', [])
+            tags_string = ' '.join(tags).lower()
+
+            # Search in content
+            content = result['content'].lower()
+
+            # If query found in any field, add to results
+            if query_lower in title or query_lower in tags_string or query_lower in content:
+                matching_files.append(file)
+        except Exception:
+            pass  # Skip files that can't be read
+
+    return matching_files
+
 
 def display_menu():
     print("\n=== Notes Manager ===")
     print("1. List notes")
     print("2. Create note")
     print("3. Read note")
-    print('4. Edit Note')
-    print("5. Delete note")
-    print("6. Stats")
-    print("7. Help")
-    print("8. Exit")
+    print("4. Edit note")
+    print("5. Search note")
+    print("6. Delete note")
+    print("7. Stats")
+    print("8. Help")
+    print("9. Exit")
     print("====================")
 
 def main():
@@ -203,8 +232,21 @@ def main():
                     print("\nPlease enter a valid number!")
                 input("\nPress Enter to return to menu...")
 
-
         elif choice == '5':
+            # Search notes
+            query = input("\nEnter search term: ")
+            results = search_notes(query)
+
+            if not results:
+                print(f"\nNo notes found matching '{query}'")
+            else:
+                print(f"\nFound {len(results)} note(s) matching '{query}':")
+                for file in results:
+                    print(f"  - {file}")
+            input("\nPress Enter to return to menu...")
+
+
+        elif choice == '6':
             # Delete note
             files = list_files()
             if not files:
@@ -232,7 +274,7 @@ def main():
                     print("\nPlease enter a valid number!")
                 input("\nPress Enter to return to menu...")
 
-        elif choice == '6':
+        elif choice == '7':
             #stats
             stats = get_stats()
             print("\n===Note Statistics===")
@@ -242,12 +284,12 @@ def main():
                 print(f"All tags used: {','.join(set(stats['all_tags']))}")
             input("\nPress Enter to return to menu...")
 
-        elif choice == '7':
+        elif choice == '8':
             # Help
             help_message()
             input("\nPress Enter to return to menu...")
 
-        elif choice == '8':
+        elif choice == '9':
             # Exit
             print("\nGoodbye!")
             break
