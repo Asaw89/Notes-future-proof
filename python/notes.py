@@ -66,30 +66,57 @@ def display_menu():
     print("====================")
 
 def main():
-    if len(sys.argv) > 1:
-        cmd = sys.argv[1]
-        if cmd == 'help':
-            help_mesg()
-        elif cmd == 'list':
+    while True:
+        display_menu()
+        choice = input("\nSelect an option (1-5): ")
+
+        if choice == '1':
+            # List notes
             files = list_files()
+            print("\nYour notes:")
             for file in files:
-                print(file)
-        elif cmd == 'read note':
-            # get noteid
-            # open noteid.note
-            # print out
-            noteid = ''
-            read_note(noteid)
-        elif cmd == 'delete note':
-            list_files.remove()
-        elif cmd == 'create':
+                print(f"  - {file}")
+
+        elif choice == '2':
+            # Create note
             filename, title, content, tags = collect_note()
-            save_note(filename,title,content,tags)
-            print(f"Note '{filename}.note' created")
-    else:
-        print("please provide a command.")
+            save_note(filename, title, content, tags)
+            print(f"\nNote '{filename}.note' created successfully!")
 
+        elif choice == '3':
+            # Read note
+            files = list_files()
+            if not files:
+                print("\nNo notes found!")
+            else:
+                print("\nAvailable notes:")
+                for i, file in enumerate(files, 1):
+                    print(f"  {i}. {file}")
 
+                note_choice = input("\nEnter note number to read: ")
+                try:
+                    index = int(note_choice) - 1
+                    if 0 <= index < len(files):
+                        filename = files[index]
+                        result = read_note(f'notes/{filename}')
+                        
+                        print(f"\n--- {result['metadata']['title']} ---")
+                        print(f"Created: {result['metadata']['created']}")
+                        print(f"Tags: {result['metadata'].get('tags', [])}")
+                        print(f"\n{result['content']}")
+                    else:
+                        print("\nInvalid note number!")
+                except ValueError:
+                    print("\nPlease enter a valid number!")
+
+        elif choice == '4':
+            # Delete note
+            print("\nDelete note - coming soon!")
+
+        elif choice == '5':
+            # Exit
+            print("\nGoodbye!")
+            break
 
 if __name__ == '__main__':
     main()
