@@ -8,6 +8,18 @@ def help_mesg():
     help_string = 'Notes know hows to "help"'
     print(help_string)
 
+def collect_note():
+    filename = input('Enter note filename:')
+    title = input('Enter title:')
+    content =input('Enter note content:')
+    tags_input=input('Enter tags(comma-separated, or press Enter to skip):')
+
+    if tags_input.strip():
+        tags=[tag.strip() for tag in tags_input.split(',')]
+    else:
+        tags = []
+    return filename,title,content,tags
+
 def save_note(filename, title, content, tags):
     timestamp = datetime.now().isoformat() +'Z'
     metadata={
@@ -22,11 +34,7 @@ def save_note(filename, title, content, tags):
     with open(f'notes/{filename}.note', 'w') as f:
         f.write(full_content)
 
-
-
-
 def list_files():
-    print("all the files")
     files = os.listdir('notes')
     notes = [f for f in files if f.endswith('.note')]
     return notes
@@ -53,8 +61,10 @@ def main():
         cmd = sys.argv[1]
         if cmd == 'help':
             help_mesg()
-        elif cmd == 'list notes':
-            list_files()
+        elif cmd == 'list':
+            files = list_files()
+            for file in files:
+                print(file)
         elif cmd == 'read note':
             # get noteid
             # open noteid.note
@@ -63,10 +73,14 @@ def main():
             read_note(noteid)
         elif cmd == 'delete note':
             list_files.remove()
+        elif cmd == 'create':
+            filename, title, content, tags = collect_note()
+            save_note(filename,title,content,tags)
+            print(f"Note '{filename}.note' created")
     else:
         print("please provide a command.")
 
-    print(sys.argv)
+
 
 if __name__ == '__main__':
     main()
