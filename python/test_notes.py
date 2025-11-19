@@ -1,4 +1,4 @@
-from notes import read_note, list_files, save_note, delete_note
+from notes import read_note, list_files, save_note, delete_note, get_stats
 
 def test_list_files_returns_note_files():
     files = list_files()
@@ -39,3 +39,11 @@ def test_delete_note_removes_file():
     # Verify it's gone
     files = list_files()
     assert 'temp-delete-test.note' not in files
+
+def test_stats_returns_note_count():
+    stats = get_stats()
+
+    # Check that it returns a dictionary with stats
+    assert 'total_notes' in stats
+    assert isinstance(stats['total_notes'], int)
+    assert stats['total_notes'] >= 0

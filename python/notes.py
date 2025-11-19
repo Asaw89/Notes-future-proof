@@ -60,6 +60,27 @@ def delete_note(filename):
     filepath = f'notes/{filename}.note'
     os.remove(filepath)
 
+def get_stats():
+    files = list_files()
+    total_notes = len(files)
+
+    all_tags= []
+    for files in files:
+        try:
+            result=read_note(f'notes/{files}')
+            tags = result['metadata'].get('tags', [])
+            all_tags.extend(tags)
+        except Exception:
+            pass
+    total_tags = len(set(all_tags))
+
+    return {
+        'total_notes': total_notes,
+        'total_tags': total_tags,
+        'all_tags' : all_tags
+    }
+
+
 def display_menu():
     print("\n=== Notes Manager ===")
     print("1. List notes")
