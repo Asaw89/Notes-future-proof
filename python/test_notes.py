@@ -18,7 +18,7 @@ def test_save_note_creates_file_with_yaml():
     save_note('test-note', 'My Test Note', 'This is test content', ['testing', 'example'])
 
     # Read it back
-    result = read_note('notes/test-note.note')
+    result = read_note('ROOT_FOLDER/test-note.note')
 
     # Verify the metadata
     assert result['metadata']['title'] == 'My Test Note'
@@ -56,7 +56,7 @@ def test_edit_note_updates_content():
     edit_note('edit-test', title='Updated Title', content='New content', tags=['updated'])
 
     # Read it back
-    result = read_note('notes/edit-test.note')
+    result = read_note('ROOT_FOLDER/edit-test.note')
 
     # Verify changes
     assert result['metadata']['title'] == 'Updated Title'

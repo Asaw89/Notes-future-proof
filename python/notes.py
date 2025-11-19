@@ -1,6 +1,7 @@
 import sys
 import os
 import yaml
+from Configurator import ROOT_FOLDER
 from datetime import datetime
 
 
@@ -31,11 +32,11 @@ def save_note(filename, title, content, tags): #We need to take the information 
     yaml_string = yaml.dump(metadata)#convert to YAML by going from dictionary -> YAML
     full_content = '---\n' + yaml_string + '---\n\n' + content #We construct the contents together like Lego Blocks
 
-    with open(f'notes/{filename}.note', 'w') as f:#Creates the file path and Writes it
+    with open(f'{ROOT_FOLDER}/{filename}.note', 'w') as f:#Creates the file path and Writes it
         f.write(full_content)# Writes YAML + Content
 
 def list_files():
-    files = os.listdir('notes')
+    files = os.listdir(ROOT_FOLDER)
     notes = [f for f in files if f.endswith('.note')]
     return notes
     # get all the filenames from the CWD
@@ -57,13 +58,13 @@ def read_note(n): #This function reads a note file and separates it into two par
     }
 
 def edit_note(filename, title=None, content=None,tags=None ):#Read the existing note
-    filepath = f'notes/{filename}.note'
+    filepath = f'{ROOT_FOLDER}/{filename}.note'
     result=read_note(filepath)
 
     if title is not None: #update the fields
         result['metadata']['title']= title
     if content is not None:
-        result['metadata']['content']= content
+        result['content']= content
     if tags is not None:
         result['metadata']['tags']=tags
     result['metadata']['modified']=datetime.now().isoformat() + 'Z' #updates the timestamp
@@ -75,7 +76,7 @@ def edit_note(filename, title=None, content=None,tags=None ):#Read the existing 
         f.write(full_content)
 
 def delete_note(filename):
-    filepath = f'notes/{filename}.note'
+    filepath = f'{ROOT_FOLDER}/{filename}.note'
     os.remove(filepath)
 
 def get_stats():
@@ -85,7 +86,7 @@ def get_stats():
     all_tags= []
     for files in files:
         try:
-            result=read_note(f'notes/{files}')
+            result=read_note(f'{ROOT_FOLDER}/{files}')
             tags = result['metadata'].get('tags', [])
             all_tags.extend(tags)
         except Exception:
@@ -104,16 +105,17 @@ def display_menu():
     print("1. List notes")
     print("2. Create note")
     print("3. Read note")
-    print("4. Delete note")
-    print("5. Stats")
-    print("6. Help")
-    print("7. Exit")
+    print('4. Edit Note')
+    print("5. Delete note")
+    print("6. Stats")
+    print("7. Help")
+    print("8. Exit")
     print("====================")
 
 def main():
-    while True:
+    while True: #infinite loop
         display_menu()
-        choice = input("\nSelect an option (1-5): ")
+        choice = input("\nSelect an option (1-8): ")
 
         if choice == '1':
             # List notes
@@ -146,8 +148,8 @@ def main():
                     index = int(note_choice) - 1
                     if 0 <= index < len(files):
                         filename = files[index]
-                        result = read_note(f'notes/{filename}')
-                        
+                        result = read_note(f'{ROOT_FOLDER}/{filename}')
+
                         print(f"\n--- {result['metadata']['title']} ---")
                         print(f"Created: {result['metadata']['created']}")
                         print(f"Tags: {result['metadata'].get('tags', [])}")
@@ -161,6 +163,48 @@ def main():
                     input("\nPress Enter to return to menu...")
 
         elif choice == '4':
+            #Edit Note
+            files = list_files()
+            if not files:
+                print("\nNo notes found!")
+                input("\nPress Enter to return to menu...")
+            else:
+                print("\nAvailable notes:")
+                for i, file in enumerate(files, 1):
+                    print(f"  {i}. {file}")
+                note_choice = input("\nEnter note number to edit: ")
+                try:
+                    index = int(note_choice) - 1
+                    if 0 <= index < len(files):
+                        filename = files[index].replace('.note', '')
+
+                        # Show current content
+                        result = read_note(f'{ROOT_FOLDER}/{files[index]}')
+                        print(f"\nCurrent title: {result['metadata']['title']}")
+                        print(f"Current content: {result['content'][:50]}...")  # Show first 50 chars
+                        print(f"Current tags: {result['metadata'].get('tags', [])}")
+
+                        # Get new values
+                        new_title = input("\nEnter new title (or press Enter to keep current): ")
+                        new_content = input("Enter new content (or press Enter to keep current): ")
+                        new_tags = input("Enter new tags (comma-separated, or press Enter to keep current): ")
+
+                        #Parse Input
+                        title = new_title if new_title.strip() else None
+                        content = new_content if new_content.strip() else None
+                        tags = [tag.strip() for tag in new_tags.split(',')] if new_tags.strip() else None
+
+                        # Edit the note
+                        edit_note(filename, title=title, content=content, tags=tags)
+                        print(f"\nNote '{filename}.note' updated successfully!")
+                    else:
+                        print("\nInvalid note number!")
+                except ValueError:
+                    print("\nPlease enter a valid number!")
+                input("\nPress Enter to return to menu...")
+
+
+        elif choice == '5':
             # Delete note
             files = list_files()
             if not files:
@@ -188,7 +232,7 @@ def main():
                     print("\nPlease enter a valid number!")
                 input("\nPress Enter to return to menu...")
 
-        elif choice == '5':
+        elif choice == '6':
             #stats
             stats = get_stats()
             print("\n===Note Statistics===")
@@ -198,12 +242,12 @@ def main():
                 print(f"All tags used: {','.join(set(stats['all_tags']))}")
             input("\nPress Enter to return to menu...")
 
-        elif choice == '6':
+        elif choice == '7':
             # Help
             help_message()
             input("\nPress Enter to return to menu...")
 
-        elif choice == '7':
+        elif choice == '8':
             # Exit
             print("\nGoodbye!")
             break
