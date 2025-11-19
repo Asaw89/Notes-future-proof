@@ -8,31 +8,31 @@ def help_message():
     help_string = 'Notes know hows to "help"'
     print(help_string)
 
-def collect_note():
+def collect_note():#We need a way to collect information from the user to create a note.
     filename = input('Enter note filename:')
     title = input('Enter title:')
     content =input('Enter note content:')
     tags_input=input('Enter tags(comma-separated, or press Enter to skip):')
 
-    if tags_input.strip():
+    if tags_input.strip():#split by commas and clean up spaces around each tag
         tags=[tag.strip() for tag in tags_input.split(',')]
     else:
         tags = []
     return filename,title,content,tags
 
-def save_note(filename, title, content, tags):
-    timestamp = datetime.now().isoformat() +'Z'
+def save_note(filename, title, content, tags): #We need to take the information the user gave us and save it as a properly formatted note file with YAML metadata.
+    timestamp = datetime.now().isoformat() +'Z'#Use datetime to get the current time and save it to ISO format 'Z' shows UTC time
     metadata={
         'title': title,
         'created': timestamp,
         'modified': timestamp,
         'tags':tags
     }
-    yaml_string = yaml.dump(metadata)
-    full_content = '---\n' + yaml_string + '---\n\n' + content
+    yaml_string = yaml.dump(metadata)#convert to YAML by going from dictionary -> YAML
+    full_content = '---\n' + yaml_string + '---\n\n' + content #We construct the contents together like Lego Blocks
 
-    with open(f'notes/{filename}.note', 'w') as f:
-        f.write(full_content)
+    with open(f'notes/{filename}.note', 'w') as f:#Creates the file path and Writes it
+        f.write(full_content)# Writes YAML + Content
 
 def list_files():
     files = os.listdir('notes')
@@ -41,13 +41,13 @@ def list_files():
     # get all the filenames from the CWD
     # print them out
 
-def read_note(n):
+def read_note(n): #This function reads a note file and separates it into two parts: the information ABOUT the note, and the actual note content
     with open(n, 'r') as file:
         content = file.read()
-
+#We grab piece 1 (the metadata) and piece 2 (the content). We use .strip() to remove any extra spaces or blank lines from the content.
     parts = content.split('---')
     yaml_part = parts[1]
-    content_part = parts[2].strip()  # Add .strip() here!
+    content_part = parts[2].strip() #
 
     metadata = yaml.safe_load(yaml_part)
 
