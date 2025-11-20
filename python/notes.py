@@ -4,6 +4,80 @@ import yaml
 from Configurator import ROOT_FOLDER
 from datetime import datetime
 
+class Note():
+    def __init__(self, title, content, tags=None):
+        self.title = title
+        self.content = content
+        self.tags = tags if tags else []
+        self.created = datetime.now().isoformat() + 'Z'
+        self.modified = datetime.now().isoformat() + 'Z'
+
+    def save(self,filename): #We need to take the information the user gave us and save it as a properly formatted note file with YAML metadata.
+        self.modified = datetime.now().isoformat() + 'Z'#Use datetime to get the current time and save it to ISO format 'Z' shows UTC time
+        metadata = {
+            'title': self.title,      # Add self.
+            'created': self.created,  # Add self.
+            'modified': self.modified,  # Add self.
+            'tags': self.tags         # Add self.
+            }
+        yaml_string = yaml.dump(metadata)#convert to YAML by going from dictionary -> YAML
+        full_content = '---\n' + yaml_string + '---\n\n' + self.content #We construct the contents together like Lego Blocks. Kris suggested '---' to make YAMLs look nice.
+
+        with open(f'{ROOT_FOLDER}/{filename}.note', 'w') as f:#Creates the file path and Writes it
+            f.write(full_content)# Writes YAML + Content
+
+    def load_note(cls,filepath):#This function reads a note file and separates it into two parts: the information ABOUT the note, and the actual note content
+        with open(filepath, 'r') as file:
+            content = file.read() #We grab piece 1 (the metadata) and piece 2 (the content). We use .strip() to remove any extra spaces or blank lines from the content.
+            parts = content.split('---')
+            yaml_part = parts[1]
+            content_part = parts[2].strip()
+
+            metadata = yaml.safe_load(yaml_part)
+
+            note = cls(
+                title = metadata['title'],
+                content = content_part,
+                tags = metadata.get('tags', [])
+    )
+
+        note.created = metadata['created']
+        note.modified = metadata ['modified']
+
+        return note
+
+    def update_note(self,title=None, content=None,tags=None ):#update note fields
+        if title is not None:
+            self.title = title
+        if content is not None:
+            self.content = content
+        if tags is not None:
+            self.tags=tags
+
+        self.modified = datetime.now().isoformat() + 'Z'
+
+    def to_dict(self): #Return note as a dictionary
+        return {
+        'metadata': {
+            'title': self.title,
+            'created': self.created,
+            'modified': self.modified,
+            'tags': self.tags
+        },
+        'content': self.content
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 def help_message():
     help_string = 'Notes know hows to "help"'
@@ -21,19 +95,6 @@ def collect_note():#We need a way to collect information from the user to create
         tags = []
     return filename,title,content,tags
 
-def save_note(filename, title, content, tags): #We need to take the information the user gave us and save it as a properly formatted note file with YAML metadata.
-    timestamp = datetime.now().isoformat() +'Z'#Use datetime to get the current time and save it to ISO format 'Z' shows UTC time
-    metadata={
-        'title': title,
-        'created': timestamp,
-        'modified': timestamp,
-        'tags':tags
-    }
-    yaml_string = yaml.dump(metadata)#convert to YAML by going from dictionary -> YAML
-    full_content = '---\n' + yaml_string + '---\n\n' + content #We construct the contents together like Lego Blocks. Kris suggested '---' to make YAMLs look nice.
-
-    with open(f'{ROOT_FOLDER}/{filename}.note', 'w') as f:#Creates the file path and Writes it
-        f.write(full_content)# Writes YAML + Content
 
 def list_files():
     files = os.listdir(ROOT_FOLDER)
@@ -299,3 +360,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    note = Note('Test', 'Some content', ['tag1'])
+    note.save('test-note')

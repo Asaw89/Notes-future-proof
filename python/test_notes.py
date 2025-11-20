@@ -1,4 +1,4 @@
-from notes import read_note, list_files, save_note, delete_note, get_stats, edit_note, search_notes
+from notes import read_note, list_files, save_note, delete_note, get_stats, edit_note, search_notes, Note
 from Configurator import ROOT_FOLDER
 
 def test_list_files_returns_note_files():
@@ -76,3 +76,19 @@ def test_search_notes_finds_matching_notes():
     # Should find the first note
     assert len(results) > 0
     assert any('search-test-1.note' in result for result in results)
+
+def test_note_update_method():
+    # Create and save a note
+    note = Note('Original Title', 'Original content', ['test'])
+    note.save('update-test')
+
+    # Load it back
+    loaded_note = Note.load_from_file(f'{ROOT_FOLDER}/update-test.note')
+
+    # Update it
+    loaded_note.update(title='New Title')
+    loaded_note.save('update-test')
+
+    # Load again and verify
+    final_note = Note.load_from_file(f'{ROOT_FOLDER}/update-test.note')
+    assert final_note.title == 'New Title'
