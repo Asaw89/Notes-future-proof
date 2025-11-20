@@ -37,7 +37,10 @@ def save_note(filename, title, content, tags): #We need to take the information 
 
 def list_files():
     files = os.listdir(ROOT_FOLDER)
-    notes = [f for f in files if f.endswith('.note')]
+    notes = []
+    for f in files:
+        if f.endswith('.note'):
+            notes.append(f)
     return notes
     # get all the filenames from the CWD
     # print them out
@@ -108,7 +111,7 @@ def search_notes(query):
     for file in files:
         try:
             result = read_note(f'{ROOT_FOLDER}/{file}')
-            \
+
             # Search in title
             title = result['metadata'].get('title', '').lower()
 
@@ -132,7 +135,7 @@ def display_menu():
     print("\n=== Notes Manager ===")
     print("1. List notes")
     print("2. Create note")
-    print("3. Read note")
+    print("3. Go to note")
     print("4. Edit note")
     print("5. Search note")
     print("6. Delete note")
@@ -144,7 +147,7 @@ def display_menu():
 def main():
     while True: #infinite loop
         display_menu()
-        choice = input("\nSelect an option (1-8): ")
+        choice = input("\nSelect an option (1-9): ")
 
         if choice == '1':
             # List notes
