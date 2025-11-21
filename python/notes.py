@@ -4,6 +4,28 @@ import yaml
 from Configurator import ROOT_FOLDER
 from datetime import datetime
 
+
+#still being used in Notebook.search_notes(line 95)
+#Still being used in Notebook.get_stats(line 119)
+
+#read_notes returns a dictionary with the meta data
+
+def read_note(n): #This function reads a note file and separates it into two parts: the information ABOUT the note, and the actual note content
+    with open(n, 'r') as file:
+        content = file.read()
+#We grab piece 1 (the metadata) and piece 2 (the content). We use .strip() to remove any extra spaces or blank lines from the content.
+    parts = content.split('---')
+    yaml_part = parts[1]
+    content_part = parts[2].strip() #
+
+    metadata = yaml.safe_load(yaml_part)
+
+    return {
+        'metadata': metadata,
+        'content': content_part
+    }
+
+
 class Note():
     def __init__(self, title, content, tags=None):#constructor
         self.title = title
@@ -75,7 +97,7 @@ class Notebook():
 
     def list_notes(self):
         files = os.listdir(self.notes_folder)
-        notes = [f for f in files if f.endswith('.note')] 
+        notes = [f for f in files if f.endswith('.note')]
         return notes
 
     def get_note(self, filename):
@@ -85,7 +107,7 @@ class Notebook():
     def search_notes(self, query):
         files = self.list_notes()
         matching_files = []
-        query_lower = query.lower()
+        query_words = query.lower().split() #split query into individual keywords
 
         for file in files:
             try:
@@ -95,7 +117,14 @@ class Notebook():
                 tags_string = ' '.join(tags).lower()
                 content = result['content'].lower()
 
-                if query_lower in title or query_lower in tags_string or query_lower in content:
+                searchable_text = f"{title} {tags_string} {content}" #searchable keywords
+
+                found=False
+                for word in query_words:
+                    if word in searchable_text:
+                        found=True
+                        break
+                if found:
                     matching_files.append(file)
             except Exception:
                 pass
@@ -253,9 +282,61 @@ class Application():
             print(f"\nNo notes found matching '{query}'")
         else:
             print(f"\nFound {len(results)} note(s) matching '{query}':")
-            for file in results:
-                print(f"  - {file}")
-        input("\nPress Enter to return to menu...")
+            for i, file in enumerate(results,1):
+                print(f"  {i}. {file}")
+            print("\What would you like to do?")
+            print("1. Read note")
+            print("2. Edit note")
+            print("3. Return to main menu")
+
+            action = input("n\Select an option (1-3):")
+
+            if action == '1': #Reads the note from result
+                note_choice=input("\nEnter note number to read:")
+                try:
+                    index=int(note_choice)-1
+                    if 0 <= index < len(results):
+                        note = self.notebook.get_note(results[index])
+                        print(f"---{note.title}---")
+                        print(f"created;{note.created}")
+                        print(f"Tags:{note.tags}")
+                        print(f"{note.content}")
+                    else:
+                        print("\nInvalid note number")
+                except ValueError:
+                    print("\nPlease enter a valid number")
+
+            elif action == '2':#Edit a note from result
+                note_choice=input("Enter note number to edit:")
+                try:
+                    index=int(note_choice)-1
+                    if 0 <= index < len(results):
+                        filename = results[index].replace('.note', '')
+                        note = self.notebook.get_note(results[index])
+                        print(f"Current title:{note.title}")
+                        print(f"Current content:{note.content[:50]}...")
+                        print(f"Current tags: {note.tags}")
+
+                        new_title = input("\nEnter new title (or press Enter to keep current): ")
+                        new_content = input("Enter new content (or press Enter to keep current): ")
+                        new_tags = input("Enter new tags (comma-separated, or press Enter to keep current): ")
+
+
+                        title = new_title if new_title.strip() else None
+                        content = new_content if new_content.strip() else None
+                        tags = [tag.strip() for tag in new_tags.split(',')] if new_tags.strip() else None
+
+                        note.update(title=title, content=content, tags=tags)
+                        note.save(filename)
+                        print(f"\nNote '{filename}.note' updated successfully!")
+                    else:
+                        print("\nInvalid note number!")
+                except ValueError:
+                    print("\nPlease enter a valid number!")
+            input("\nPress Enter to return to menu...")
+
+
+
 
     def handle_delete(self):
         files = self.notebook.list_notes()
@@ -345,22 +426,3 @@ if __name__ == '__main__':
 
 
 
-#still being used in Notebook.search_notes(line 95)
-#Still being used in Notebook.get_stats(line 119)
-
-#read_notes returns a dictionary with the meta data
-
-def read_note(n): #This function reads a note file and separates it into two parts: the information ABOUT the note, and the actual note content
-    with open(n, 'r') as file:
-        content = file.read()
-#We grab piece 1 (the metadata) and piece 2 (the content). We use .strip() to remove any extra spaces or blank lines from the content.
-    parts = content.split('---')
-    yaml_part = parts[1]
-    content_part = parts[2].strip() #
-
-    metadata = yaml.safe_load(yaml_part)
-
-    return {
-        'metadata': metadata,
-        'content': content_part
-    }
