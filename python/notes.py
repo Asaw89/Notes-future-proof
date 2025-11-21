@@ -27,10 +27,13 @@ def read_note(n): #This function reads a note file and separates it into two par
 
 
 class Note():
-    def __init__(self, title, content, tags=None):#constructor
+    def __init__(self, title, content, tags=None, author=None, status=None, priority=None):#constructor
         self.title = title
         self.content = content
         self.tags = tags if tags else []
+        self.author = author
+        self.status= status
+        self.priority = priority
         self.created = datetime.now().isoformat() + 'Z'
         self.modified = datetime.now().isoformat() + 'Z'
 
@@ -61,7 +64,11 @@ class Note():
             note = cls(#cls = "the class itself" a "note factory"
                 title = metadata['title'],
                 content = content_part,
-                tags = metadata.get('tags', [])
+                tags = metadata.get('tags', []),
+                author=metadata.get('author'),
+                status=metadata.get('status'),
+                priority=metadata.get('priority')
+
     )
 
         note.created = metadata['created']
@@ -85,7 +92,10 @@ class Note():
             'title': self.title,
             'created': self.created,
             'modified': self.modified,
-            'tags': self.tags
+            'tags': self.tags,
+            'author': self.author,
+            'status': self.status,
+            'priority': self.priority
         },
         'content': self.content
     }
@@ -166,12 +176,15 @@ class Application():
         title = input('Enter title:')
         content = input('Enter note content:')
         tags_input = input('Enter tags(comma-separated, or press Enter to skip):')
+        author = input('Enter author (or press Enter to skip): ').strip() or None
+        status = input('Enter status(or press Enter to skip): ').strip() or None
+        priority = input('Enter priority(or press Enter to skip): ').strip() or None
 
         if tags_input.strip():  # split by commas and clean up spaces around each tag
             tags = [tag.strip() for tag in tags_input.split(',')]
         else:
             tags = []
-        return filename, title, content, tags
+        return filename, title, content, tags,author, status, priority
 
     def display_menu(self):
         print("\n=== Notes Manager ===")
@@ -314,7 +327,7 @@ class Application():
                         filename = results[index].replace('.note', '')
                         note = self.notebook.get_note(results[index])
                         print(f"Current title:{note.title}")
-                        print(f"Current content:{note.content[:50]}...")
+                        print(f"Current content:{note.content[:50]}...")#[:50 is for the preview]
                         print(f"Current tags: {note.tags}")
 
                         new_title = input("\nEnter new title (or press Enter to keep current): ")
