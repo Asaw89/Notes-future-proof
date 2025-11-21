@@ -5,7 +5,7 @@ from Configurator import ROOT_FOLDER
 from datetime import datetime
 
 class Note():
-    def __init__(self, title, content, tags=None):
+    def __init__(self, title, content, tags=None):#constructor
         self.title = title
         self.content = content
         self.tags = tags if tags else []
@@ -26,17 +26,17 @@ class Note():
         with open(f'{ROOT_FOLDER}/{filename}.note', 'w') as f:#Creates the file path and Writes it
             f.write(full_content)# Writes YAML + Content
 
-    @classmethod
+    @classmethod #Needed, because load _note does not use a regular "method".It CREATES a new Note Instance from FILE
     def load_note(cls,filepath):#This function reads a note file and separates it into two parts: the information ABOUT the note, and the actual note content
         with open(filepath, 'r') as file:
             content = file.read() #We grab piece 1 (the metadata) and piece 2 (the content). We use .strip() to remove any extra spaces or blank lines from the content.
-            parts = content.split('---')
-            yaml_part = parts[1]
-            content_part = parts[2].strip()
+            parts = content.split('---')#splits the content into pieces
+            yaml_part = parts[1]#the meta data between the dashes
+            content_part = parts[2].strip()#displays the actual content
 
-            metadata = yaml.safe_load(yaml_part)
+            metadata = yaml.safe_load(yaml_part)#Converts YAML text into a python Dictionary, so python can read the file.
 
-            note = cls(
+            note = cls(#cls = "the class itself" a "note factory"
                 title = metadata['title'],
                 content = content_part,
                 tags = metadata.get('tags', [])
@@ -70,12 +70,12 @@ class Note():
 
 class Notebook():
 
-    def __init__(self, notes_folder):
+    def __init__(self, notes_folder): #constructor
         self.notes_folder = notes_folder
 
     def list_notes(self):
         files = os.listdir(self.notes_folder)
-        notes = [f for f in files if f.endswith('.note')]
+        notes = [f for f in files if f.endswith('.note')] 
         return notes
 
     def get_note(self, filename):
@@ -129,7 +129,7 @@ class Notebook():
 
 class Application():
 
-    def __init__(self, notebook):
+    def __init__(self, notebook): #Constructor
         self.notebook = notebook
 
     def collect_note_input(self):
@@ -165,7 +165,6 @@ class Application():
         input("\nPress Enter to return to menu...")
 
     def handle_create(self):
-        # Create note
         filename, title, content, tags = self.collect_note_input()
 
         # Create a Note object
@@ -176,18 +175,18 @@ class Application():
         input("\nPress Enter to return to menu...")
 
     def handle_read(self):
-        files = self.notebook.list_notes()
-        if not files:
+        files = self.notebook.list_notes()#Stored in files List
+        if not files: #if there are no notes
             print("\nNo notes found!")
             input("\nPress Enter to return to menu...")
         else:
             print("\nAvailable notes:")
-            for i, file in enumerate(files, 1):
+            for i, file in enumerate(files, 1): #gives us each file number
                 print(f"  {i}. {file}")
 
-            note_choice = input("\nEnter note number to read: ")
+            note_choice = input("\nEnter note number to read: ") #user inputs choice
             try:
-                index = int(note_choice) - 1
+                index = int(note_choice) - 1 #convert the string into an integer
                 if 0 <= index < len(files):
                     note = self.notebook.get_note(files[index])
                     print(f"\n--- {note.title} ---")
@@ -198,18 +197,18 @@ class Application():
                 else:
                     print("\nInvalid note number!")
                     input("\nPress Enter to return to menu...")
-            except ValueError:
+            except ValueError: #validate the numbers
                 print("\nPlease enter a valid number!")
                 input("\nPress Enter to return to menu...")
 
     def handle_edit(self):
         files = self.notebook.list_notes()
-        if not files:
+        if not files: #if no files found
             print("\nNo notes found!")
             input("\nPress Enter to return to menu...")
         else:
             print("\nAvailable notes:")
-            for i, file in enumerate(files, 1):
+            for i, file in enumerate(files, 1): #gives file numbers
                 print(f"  {i}. {file}")
 
             note_choice = input("\nEnter note number to edit: ")
@@ -221,12 +220,12 @@ class Application():
                     # Load the note using Note class
                     note = self.notebook.get_note(files[index])
 
-                    # Show current content
+                    # Show the current content
                     print(f"\nCurrent title: {note.title}")
                     print(f"Current content: {note.content[:50]}...")
                     print(f"Current tags: {note.tags}")
 
-                    # Get new values
+                    # Get the new values
                     new_title = input("\nEnter new title (or press Enter to keep current): ")
                     new_content = input("Enter new content (or press Enter to keep current): ")
                     new_tags = input("Enter new tags (comma-separated, or press Enter to keep current): ")
@@ -260,28 +259,28 @@ class Application():
 
     def handle_delete(self):
         files = self.notebook.list_notes()
-        if not files:
+        if not files: #If no files are found
             print("\nNo notes found!")
             input("\nPress Enter to return to menu...")
         else:
             print("\nAvailable notes:")
-            for i, file in enumerate(files, 1):
+            for i, file in enumerate(files, 1):#Gives us the file number
                 print(f"  {i}. {file}")
 
             note_choice = input("\nEnter note number to delete: ")
             try:
-                index = int(note_choice) - 1
-                if 0 <= index < len(files):
-                    filename = files[index].replace('.note', '')
+                index = int(note_choice) - 1 #finds the note number
+                if 0 <= index < len(files): #convert and adjust, because indexes
+                    filename = files[index].replace('.note', '') #Removes the note extension
                     confirm = input(f"Are you sure you want to delete '{filename}.note'? (y/n): ")
-                    if confirm.lower() == 'y':
-                        self.notebook.delete_note(filename)
+                    if confirm.lower() == 'y':#add .lower so user can type in whatever they want.
+                        self.notebook.delete_note(filename)#Actually removes the file
                         print(f"\nNote '{filename}.note' deleted successfully!")
                     else:
                         print("\nDeletion cancelled.")
                 else:
                     print("\nInvalid note number!")
-            except ValueError:
+            except ValueError:#make sure the user enters in the right numbers
                 print("\nPlease enter a valid number!")
             input("\nPress Enter to return to menu...")
 
@@ -312,7 +311,7 @@ class Application():
     def run(self):
         while True:
             self.display_menu()
-            choice = input("\nSelect an option (1-9): ")
+            choice = input("\nSelect an option (1-9): ")#Handles User inputs
 
             if choice == '1':
                 self.handle_list()
@@ -337,8 +336,8 @@ class Application():
                 print("\nInvalid option. Please choose 1-9.")
 
 if __name__ == '__main__':
-    notebook = Notebook(ROOT_FOLDER)
-    app = Application(notebook)
+    notebook = Notebook(ROOT_FOLDER)#calls back to the configurator
+    app = Application(notebook)#Creates the new instance with __int__
     app.run()
 
 
@@ -346,6 +345,10 @@ if __name__ == '__main__':
 
 
 
+#still being used in Notebook.search_notes(line 95)
+#Still being used in Notebook.get_stats(line 119)
+
+#read_notes returns a dictionary with the meta data
 
 def read_note(n): #This function reads a note file and separates it into two parts: the information ABOUT the note, and the actual note content
     with open(n, 'r') as file:

@@ -122,7 +122,7 @@ notes stats                      # Display statistics about your notes
 - Text editor integration (nano?)
 - Extra Credit: github integration for the notes storage
 - Extra Credit: note encryption (and key management)
-  
+
 ## Phase 2: GUI Implementation
 
 Maybe this week, maybe next time we come back around to this project.

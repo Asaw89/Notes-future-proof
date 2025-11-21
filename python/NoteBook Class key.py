@@ -12,6 +12,7 @@ Calling your own Application methods:
 * self.handle_list() = call the list handler
 * self.handle_create() = call the create handler
 * (etc. for all handlers)
+
 In the Notebook class:
 Accessing the folder path:
 * self.notes_folder = the folder path string
