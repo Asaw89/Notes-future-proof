@@ -207,10 +207,10 @@ class Application():
         input("\nPress Enter to return to menu...")
 
     def handle_create(self):
-        filename, title, content, tags = self.collect_note_input()
+        filename, title, content, tags, author, status, priority = self.collect_note_input()
 
         # Create a Note object
-        note = Note(title, content, tags)
+        note = Note(title, content, tags, author, status, priority)
         note.save(filename)
 
         print(f"\nNote '{filename}.note' created successfully!")
