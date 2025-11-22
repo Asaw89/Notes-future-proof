@@ -151,7 +151,7 @@ class Application():
     def __init__(self, notebook): #Constructor
         self.notebook = notebook
 
-    def collect_note_input(self): #Create a temporary file with a random name, file ends with.txt. Put a helpful comment in the file so its not empty
+    def create_note_input(self): #Create a temporary file with a random name, file ends with.txt. Put a helpful comment in the file so its not empty
         filename= input('Enter note filename:')
         title= input('Enter title:')
 
@@ -165,7 +165,7 @@ class Application():
         print("  - Type your note content")
         print("  - Save: Ctrl+O, then press Enter")
         print("  - Exit: Ctrl+X")
-        input("Press Enter when ready to open nano...")
+        input("Press Enter when ready")
 
         # Open nano
         subprocess.call(['nano', temp_path])#runs another program(nano) from Python. Command:"nano/tmp/tmpxyz123.txt"
@@ -208,7 +208,7 @@ class Application():
         input("Press Enter to return to menu...")
 
     def handle_create(self):
-        filename, title, content, tags, author, status, priority = self.collect_note_input()
+        filename, title, content, tags, author, status, priority = self.create_note_input()
 
         # Create a Note object
         note = Note(title, content, tags, author, status, priority)
@@ -262,7 +262,11 @@ class Application():
 
                 # Open the actual file in nano
                     print(f"Opening {files[index]} in nano...")
-                    print("(Save with Ctrl+O, then Enter. Exit with Ctrl+X)")
+                    print("Instructions:")
+                    print("  - Edit your note content")
+                    print("  - Save: Ctrl+O, then press Enter")
+                    print("  - Exit: Ctrl+X")
+                    input("Press Enter when ready")
                     subprocess.call(['nano', filepath])
 
                     print(f"Note '{files[index]}' updated successfully!")
@@ -282,12 +286,12 @@ class Application():
             print(f"Found {len(results)} note(s) matching '{query}':")
             for i, file in enumerate(results,1):
                 print(f"  {i}. {file}")
-            print("\What would you like to do?")
+            print("What would you like to do?")
             print("1. Read note")
             print("2. Edit note")
             print("3. Return to main menu")
 
-            action = input("n\Select an option (1-3):")
+            action = input("Select an option (1-3):")
 
             if action == '1': #Reads the note from result
                 note_choice=input("Enter note number to read:")
@@ -310,9 +314,12 @@ class Application():
                     index = int(note_choice) - 1
                     if 0 <= index < len(results):
                         filepath = f'{self.notebook.notes_folder}/{results[index]}'
-                        # Open the actual file in nano
                         print(f"Opening {results[index]} in nano...")
-                        print("(Save with Ctrl+O, then Enter. Exit with Ctrl+X)")
+                        print("Instructions:")
+                        print("  - Edit your note content")
+                        print("  - Save: Ctrl+O, then press Enter")
+                        print("  - Exit: Ctrl+X")
+                        input("Press Enter when ready")
                         subprocess.call(['nano', filepath])
 
                         print(f"Note '{results[index]}' updated successfully!")
