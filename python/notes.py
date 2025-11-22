@@ -159,15 +159,13 @@ class Application():
             temp_path = temp_file.name
             temp_file.write("# Enter your note content below (you can delete this line)")
 
-        # Show instructions BEFORE opening nano
-        print("Opening nano for content entry...")
+        print("Opening nano for content entry...")#Opens up before nano
         print("Instructions:")
         print("  - Type your note content")
         print("  - Save: Ctrl+O, then press Enter")
         print("  - Exit: Ctrl+X")
         input("Press Enter when ready")
 
-        # Open nano
         subprocess.call(['nano', temp_path])#runs another program(nano) from Python. Command:"nano/tmp/tmpxyz123.txt"
 
         with open(temp_path,'r') as f:
@@ -176,7 +174,7 @@ class Application():
         os.remove(temp_path)
 
         tags_input=input('Enter tags (comma-separated, or press enter to skip):')
-        author = input('Enter author (or press Enter to skip):').strip() or None
+        author = input('Enter author (or press Enter to skip):').strip() or None #the .strip() or None is used to add optional variables
         status = input('Enter status (or press Enter to skip):').strip() or None
         priority = input('Enter priority(or press Enter to skip):').strip() or None
 
@@ -188,7 +186,7 @@ class Application():
         return filename, title, content, tags, author, status, priority
 
     def display_menu(self):
-        print("=== Notes Manager ===")
+        print("==== Notes Manager ====")
         print("1. List notes")
         print("2. Create note")
         print("3. Go to note")
