@@ -4,6 +4,7 @@ import yaml
 import tempfile
 import subprocess
 from Configurator import ROOT_FOLDER
+from collections import Counter
 from datetime import datetime
 
 
@@ -366,7 +367,12 @@ class Application():
         print(f"Total Notes: {stats['total_notes']}")
         print(f"Unique tags: {stats['total_tags']}")
         if stats['all_tags']:
-            print(f"All tags used: {','.join(set(stats['all_tags']))}")
+            tag_counts = Counter(stats['all_tags'])
+            top_tags = tag_counts.most_common(10)
+            print("Top 10 most used tags:")
+            for tag, count in top_tags:
+                print(f' {tag}: {count} notes')
+
         input("Press Enter to return to menu...")
 
     def handle_help(self):
