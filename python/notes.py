@@ -247,7 +247,7 @@ class Application():
 
     def handle_edit(self):
         files = self.notebook.list_notes()
-        files.sort(key=str.lower)
+        files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
         if not files:
             print("No notes found!")
             input("Press Enter to return to menu...")
@@ -281,7 +281,7 @@ class Application():
     def handle_search(self):
         query = input("Enter search term: ")
         results = self.notebook.search_notes(query)
-        results.sort(key=str.lower)
+        results.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
 
         if not results:
             print(f"No notes found matching '{query}'")
@@ -335,7 +335,7 @@ class Application():
 
     def handle_delete(self):
         files = self.notebook.list_notes()
-        files.sort(key=str.lower)
+        files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
         if not files: #If no files are found
             print("No notes found!")
             input("Press Enter to return to menu...")
