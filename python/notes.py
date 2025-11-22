@@ -200,6 +200,7 @@ class Application():
 
     def handle_list(self):  # Separate method
         files = self.notebook.list_notes()  # Use self.notebook
+        files.sort(key=str.lower)
         print("Your notes:")
         for file in files:
             print(f"  - {file}")
@@ -217,6 +218,7 @@ class Application():
 
     def handle_read(self):
         files = self.notebook.list_notes()#Stored in files List
+        files.sort(key=str.lower) #sorts the files alphabetically
         if not files: #if there are no notes
             print("No notes found!")
             input("Press Enter to return to menu...")
@@ -244,6 +246,7 @@ class Application():
 
     def handle_edit(self):
         files = self.notebook.list_notes()
+        files.sort(key=str.lower)
         if not files:
             print("No notes found!")
             input("Press Enter to return to menu...")
@@ -277,6 +280,7 @@ class Application():
     def handle_search(self):
         query = input("Enter search term: ")
         results = self.notebook.search_notes(query)
+        results.sort(key=str.lower)
 
         if not results:
             print(f"No notes found matching '{query}'")
@@ -330,6 +334,7 @@ class Application():
 
     def handle_delete(self):
         files = self.notebook.list_notes()
+        files.sort(key=str.lower)
         if not files: #If no files are found
             print("No notes found!")
             input("Press Enter to return to menu...")
