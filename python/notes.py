@@ -200,7 +200,7 @@ class Application():
 
     def handle_list(self):  # Separate method
         files = self.notebook.list_notes()  # Use self.notebook
-        files.sort(key=str.lower)
+        files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
         print("Your notes:")
         for file in files:
             print(f"  - {file}")
