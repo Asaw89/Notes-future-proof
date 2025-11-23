@@ -155,12 +155,14 @@ class Application():
     def create_note_input(self): #Create a temporary file with a random name, file ends with.txt. Put a helpful comment in the file so its not empty
         filename= input('Enter note filename:')
         title= input('Enter title:')
+        print()
 
         with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as temp_file:
             temp_path = temp_file.name
-            temp_file.write("# Enter your note content below (you can delete this line)")
-
+            temp_file.write()
+        print()
         print("Opening nano for content entry...")#Opens up before nano
+        print()
         print("Instructions:")
         print("  - Type your note content")
         print("  - Save: Ctrl+O, then press Enter")
@@ -186,24 +188,24 @@ class Application():
 
         return filename, title, content, tags, author, status, priority
 
-    def display_menu(self):
-        print("==== Notes Manager ====")
-        print("1. List notes")
-        print("2. Create note")
-        print("3. Go to note")
-        print("4. Edit note")
-        print("5. Search note")
-        print("6. Delete note")
-        print("7. Stats")
-        print("8. Help")
-        print("9. Exit")
-        print("====================")
+    def handle_create(self):
+        filename, title, content, tags, author, status, priority = self.create_note_input()
+
+        # Create a Note object
+        note = Note(title, content, tags, author, status, priority)
+        note.save(filename)
+
+        print()
+        print(f"Note '{filename}.note' created successfully!")
+        print()
+        input("Press Enter to return to menu")
 
     def handle_list(self):
+        print()
         print("What would you like to list?")
         print("1. List by titles")
         print("2. List by tags")
-        print("3. Back to main menu")
+        print("3. Enter to return to menu")
 
         choice = input("Select an option (1-3): ")
 
@@ -215,13 +217,13 @@ class Application():
             return
         else:
             print("Invalid option. Please choose 1-3.")
-            input("Press Enter to return to menu...")
+            input("Press Enter to return to menu")
 
     def list_by_tags(self):
         stats = self.notebook.get_stats()
         if not stats['all_tags']:
             print("No tags found!")
-            input("Press Enter to return to menu...")
+            input("Press Enter to return to menu")
             return
         tag_counts = Counter(stats['all_tags'])
         sorted_tags = sorted(tag_counts.items(), key=lambda x: x[0].lower())
@@ -229,7 +231,7 @@ class Application():
         print("All tags (alphabetically):")
         for tag, count in sorted_tags:
             print(f"  {tag}: {count} note(s)")
-        input("Press Enter to return to menu...")
+        input("Press Enter to return to menu")
 
     def list_by_titles(self):
         files = self.notebook.list_notes()
@@ -237,28 +239,22 @@ class Application():
         print("Your notes:")
         for file in files:
             print(f"  - {file}")
-        input("Press Enter to return to menu...")
+        input("Press Enter to return to menu")
 
-    def handle_create(self):
-        filename, title, content, tags, author, status, priority = self.create_note_input()
+    def handle_read(self, files=None):#refactor added default parameter "files=None". The parameter is optional
+        if files is None:
+            files = self.notebook.list_notes()#Stored in files List
+            files.sort(key=str.lower) #sorts the files alphabetically
 
-        # Create a Note object
-        note = Note(title, content, tags, author, status, priority)
-        note.save(filename)
-
-        print(f"Note '{filename}.note' created successfully!")
-        input("Press Enter to return to menu...")
-
-    def handle_read(self):
-        files = self.notebook.list_notes()#Stored in files List
-        files.sort(key=str.lower) #sorts the files alphabetically
         if not files: #if there are no notes
             print("No notes found!")
-            input("Press Enter to return to menu...")
+            input("Press Enter to return to menu")
         else:
             print("Available notes:")
             for i, file in enumerate(files, 1): #gives us each file number
                 print(f"  {i}. {file}")
+
+            print()
 
             note_choice = input("Enter note number to read: ") #user inputs choice
             try:
@@ -266,27 +262,33 @@ class Application():
                 if 0 <= index < len(files):
                     note = self.notebook.get_note(files[index])
                     print(f"--- {note.title} ---")
+                    print()
                     print(f"Created: {note.created}")
+                    print()
                     print(f"Tags: {note.tags}")
+                    print()
                     print(f"{note.content}")
-                    input("Press Enter to return to menu...")
+                    print()
+                    input("Press Enter to return to menu")
                 else:
                     print("Invalid note number!")
-                    input("Press Enter to return to menu...")
+                    input("Press Enter to return to menu")
             except ValueError: #validate the numbers
                 print("Please enter a valid number!")
-                input("Press Enter to return to menu...")
+                input("Press Enter to return to menu")
 
-    def handle_edit(self):
-        files = self.notebook.list_notes()
-        files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
+    def handle_edit(self,files=None): #refactor default parameter "files=None". The parameter is optional
+        if files is None:
+            files = self.notebook.list_notes()
+            files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
         if not files:
             print("No notes found!")
-            input("Press Enter to return to menu...")
+            input("Press Enter to return to menu")
         else:
             print("Available notes:")
             for i, file in enumerate(files, 1):
                 print(f"  {i}. {file}")
+            print()
 
             note_choice = input("Enter note number to edit: ")
             try:
@@ -296,10 +298,12 @@ class Application():
 
                 # Open the actual file in nano
                     print(f"Opening {files[index]} in nano...")
+                    print()
                     print("Instructions:")
                     print("  - Edit your note content")
                     print("  - Save: Ctrl+O, then press Enter")
                     print("  - Exit: Ctrl+X")
+                    print()
                     input("Press Enter when ready")
                     subprocess.call(['nano', filepath])
 
@@ -308,7 +312,7 @@ class Application():
                     print("Invalid note number!")
             except ValueError:
                 print("Please enter a valid number!")
-        input("Press Enter to return to menu...")
+        input("Press Enter to return to menu")
 
     def handle_search(self):
         query = input("Enter search term: ")
@@ -321,48 +325,21 @@ class Application():
             print(f"Found {len(results)} note(s) matching '{query}':")
             for i, file in enumerate(results,1):
                 print(f"  {i}. {file}")
+            print()
             print("What would you like to do?")
+            print()
             print("1. Read note")
             print("2. Edit note")
+            print()
             print("Press Enter to return to menu")
 
-            action = input("Select an option (1-3):")
+            action = input("Select an option (1-2):")
 
             if action == '1': #Reads the note from result
-                note_choice=input("Enter note number to read:")
-                try:
-                    index=int(note_choice)-1
-                    if 0 <= index < len(results):
-                        note = self.notebook.get_note(results[index])
-                        print(f"---{note.title}---")
-                        print(f"created;{note.created}")
-                        print(f"Tags:{note.tags}")
-                        print(f"{note.content}")
-                    else:
-                        print("Invalid note number")
-                except ValueError:
-                    print("Please enter a valid number")
+                self.handle_read(files=results)
 
             elif action == '2':  # Edit a note from results
-                note_choice = input("Enter note number to edit: ")
-                try:
-                    index = int(note_choice) - 1
-                    if 0 <= index < len(results):
-                        filepath = f'{self.notebook.notes_folder}/{results[index]}'
-                        print(f"Opening {results[index]} in nano...")
-                        print("Instructions:")
-                        print("  - Edit your note content")
-                        print("  - Save: Ctrl+O, then press Enter")
-                        print("  - Exit: Ctrl+X")
-                        input("Press Enter when ready")
-                        subprocess.call(['nano', filepath])
-
-                        print(f"Note '{results[index]}' updated successfully!")
-                    else:
-                        print("Invalid note number!")
-                except ValueError:
-                    print("Please enter a valid number!")
-
+                self.handle_edit(files=results)
 
 
     def handle_delete(self):
@@ -370,7 +347,7 @@ class Application():
         files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
         if not files: #If no files are found
             print("No notes found!")
-            input("Press Enter to return to menu...")
+            input("Press Enter to return to menu")
         else:
             print("Available notes:")
             for i, file in enumerate(files, 1):#Gives us the file number
@@ -391,7 +368,8 @@ class Application():
                     print("Invalid note number!")
             except ValueError:#make sure the user enters in the right numbers
                 print("Please enter a valid number!")
-            input("Press Enter to return to menu...")
+            input("Press Enter to return to menu")
+            print()
 
     def handle_stats(self):
         stats = self.notebook.get_stats()
@@ -405,13 +383,27 @@ class Application():
             for tag, count in top_tags:
                 print(f' {tag}: {count} notes')
 
-        input("Press Enter to return to menu...")
+        input("Press Enter to return to menu")
+        print()
+
+    def display_menu(self):
+        print("==== Notes Manager ====")
+        print("1. List notes and tags")
+        print("2. Create note")
+        print("3. Go to note")
+        print("4. Edit note")
+        print("5. Search note")
+        print("6. Delete note")
+        print("7. Stats")
+        print("8. Help")
+        print("9. Exit")
+        print("====================")
 
     def handle_help(self):
         print("=== Notes Manager Help ===")
         print("Welcome to the Notes App")
         print("Available commands:")
-        print("  1. List notes   - View all your notes")
+        print("  1. List notes and tags   - View all your notes and tags")
         print("  2. Create note  - Create a new note")
         print("  3. Read note    - Display a specific note")
         print("  4. Edit note    - Modify an existing note")
@@ -421,11 +413,13 @@ class Application():
         print("  8. Help         - Show this help")
         print("  9. Exit         - Quit the application")
         input("Press Enter to return to menu...")
+        print()
 
     def run(self):
         while True:
             self.display_menu()
             choice = input("Select an option (1-9): ")#Handles User inputs
+            print()
 
             if choice == '1':
                 self.handle_list()
