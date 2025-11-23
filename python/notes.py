@@ -250,6 +250,7 @@ class Application():
             print("No notes found!")
             input("Press Enter to return to menu")
         else:
+            print()
             print("Available notes:")
             for i, file in enumerate(files, 1): #gives us each file number
                 print(f"  {i}. {file}")
@@ -412,6 +413,7 @@ class Application():
         print("  7. Stats        - Views statistics")
         print("  8. Help         - Show this help")
         print("  9. Exit         - Quit the application")
+        print()
         input("Press Enter to return to menu...")
         print()
 
