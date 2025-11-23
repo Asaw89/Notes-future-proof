@@ -157,7 +157,7 @@ class Application():
         title= input('Enter title:')
         print()
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as temp_file:#creates the temporary file. delete=false keeps the file after closing nano
             temp_path = temp_file.name
             temp_file.write()
         print()
@@ -316,7 +316,7 @@ class Application():
         input("Press Enter to return to menu")
 
     def handle_search(self):
-        query = input("Enter search term: ")
+        query = input("Enter search keywords: ")
         results = self.notebook.search_notes(query)
         results.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
 
