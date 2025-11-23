@@ -199,9 +199,41 @@ class Application():
         print("9. Exit")
         print("====================")
 
-    def handle_list(self):  # Separate method
-        files = self.notebook.list_notes()  # Use self.notebook
-        files.sort(key=str.lower) #key= tells sort: "Before comparing, transform each item using this function"
+    def handle_list(self):
+        print("What would you like to list?")
+        print("1. List by titles")
+        print("2. List by tags")
+        print("3. Back to main menu")
+
+        choice = input("Select an option (1-3): ")
+
+        if choice == '1':
+            self.list_by_titles()
+        elif choice == '2':
+            self.list_by_tags()
+        elif choice == '3':
+            return
+        else:
+            print("Invalid option. Please choose 1-3.")
+            input("Press Enter to return to menu...")
+
+    def list_by_tags(self):
+        stats = self.notebook.get_stats()
+        if not stats['all_tags']:
+            print("No tags found!")
+            input("Press Enter to return to menu...")
+            return
+        tag_counts = Counter(stats['all_tags'])
+        sorted_tags = sorted(tag_counts.items(), key=lambda x: x[0].lower())
+
+        print("All tags (alphabetically):")
+        for tag, count in sorted_tags:
+            print(f"  {tag}: {count} note(s)")
+        input("Press Enter to return to menu...")
+
+    def list_by_titles(self):
+        files = self.notebook.list_notes()
+        files.sort(key=str.lower)
         print("Your notes:")
         for file in files:
             print(f"  - {file}")
@@ -292,7 +324,7 @@ class Application():
             print("What would you like to do?")
             print("1. Read note")
             print("2. Edit note")
-            print("3. Return to main menu")
+            print("Press Enter to return to menu")
 
             action = input("Select an option (1-3):")
 
