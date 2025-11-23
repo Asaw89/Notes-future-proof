@@ -1,11 +1,11 @@
-import sys
-import os
-import yaml
-import tempfile
-import subprocess
-from Configurator import ROOT_FOLDER
-from collections import Counter
-from datetime import datetime
+import sys #provides access to system-specific parameters and functions
+import os # acts as a bridge between python and the OS allowing you to interact with file systems, manage processes, and access environment variables
+import yaml #reads and parses YAML data
+import tempfile #creates a temporary file
+import subprocess #allows other applications to run within python
+from Configurator import ROOT_FOLDER #file path
+from collections import Counter #counts
+from datetime import datetime #gives us the time/ date
 
 
 class Note():
@@ -16,7 +16,7 @@ class Note():
         self.author = author
         self.status= status
         self.priority = priority
-        self.created = datetime.now().isoformat() + 'Z'
+        self.created = datetime.now().isoformat() + 'Z' #zulu
         self.modified = datetime.now().isoformat() + 'Z'
 
     def save(self,filename): #We need to take the information the user gave us and save it as a properly formatted note file with YAML metadata.
@@ -43,7 +43,7 @@ class Note():
 
             metadata = yaml.safe_load(yaml_part)#Converts YAML text into a python Dictionary, so python can read the file.
 
-            note = cls(#cls = "the class itself" a "note factory"
+            note = cls(#cls = "the class itself" a "note factory" note becomes an object
                 title = metadata['title'],
                 content = content_part,
                 tags = metadata.get('tags', []),
@@ -58,7 +58,7 @@ class Note():
 
         return note
 
-    def update(self,title=None, content=None,tags=None ):#update note fields
+    def update(self,title=None, content=None,tags=None ):#changes some of the fields, but not all the fields
         if title is not None:
             self.title = title
         if content is not None:
@@ -87,14 +87,14 @@ class Notebook():
     def __init__(self, notes_folder): #constructor
         self.notes_folder = notes_folder
 
-    def list_notes(self):
-        files = os.listdir(self.notes_folder)
-        notes = [f for f in files if f.endswith('.note')]
+    def list_notes(self):#"Create a new list called notes by taking each file f from files, but only if that file ends with '.note'"
+        files = os.listdir(self.notes_folder) #Looks into everything in the ROOT_FOLDER
+        notes = [f for f in files if f.endswith('.note')] #filters everything that doesn't end in .note
         return notes
 
     def get_note(self, filename):
-        filepath = f'{self.notes_folder}/{filename}'
-        return Note.load_note(filepath)
+        filepath = f'{self.notes_folder}/{filename}'#The path into the Root_folder and look for the file name
+        return Note.load_note(filepath)#read it and create a note object
 
     def search_notes(self, query):
         files = self.list_notes()
@@ -103,13 +103,13 @@ class Notebook():
 
         for file in files:
             try:
-                note = Note.load_note(f'{self.notes_folder}/{file}')
+                note = Note.load_note(f'{self.notes_folder}/{file}')#loads the file as a note object, so it doesn't crash and moves on if its corrupted
 
                 title=note.title.lower()
                 tags_string=''.join(note.tags).lower()
                 content=note.content.lower()
 
-                searchable_text = f"{title} {tags_string} {content}" #searchable keywords
+                searchable_text = f"{title} {tags_string} {content}" #combines searchable keywords
 
                 found=False
                 for word in query_words:
@@ -117,29 +117,29 @@ class Notebook():
                         found=True
                         break
                 if found:
-                    matching_files.append(file)
+                    matching_files.append(file)#finds all the matching keywords in search
             except Exception:
                 pass
 
         return matching_files
 
     def delete_note(self, filename):
-        filepath = f'{self.notes_folder}/{filename}.note'
-        os.remove(filepath)
+        filepath = f'{self.notes_folder}/{filename}.note'#finds all the files in the folder with a name and adds .note
+        os.remove(filepath)#action to remove note
 
     def get_stats(self):
         files = self.list_notes()
-        total_notes = len(files)
-        all_tags = []
+        total_notes = len(files)#count the files
+        all_tags = []#collects all the tags
 
-        for file in files:
+        for file in files:#checks each file one by one
             try:
-                note = Note.load_note(f'{self.notes_folder}/{file}')
-                all_tags.extend(note.tags)
-            except Exception:
+                note = Note.load_note(f'{self.notes_folder}/{file}')#loads note file into a note object
+                all_tags.extend(note.tags) #extend(), because we want each tag individually
+            except Exception:#pass on corrupted files
                 pass
 
-        total_tags = len(set(all_tags))
+        total_tags = len(set(all_tags))#removes duplicates
 
         return {
             'total_notes': total_notes,
