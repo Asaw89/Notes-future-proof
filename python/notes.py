@@ -159,7 +159,7 @@ class Application():
 
         with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as temp_file:#creates the temporary file. delete=false keeps the file after closing nano
             temp_path = temp_file.name
-            temp_file.write()
+            2
         print()
         print("Opening nano for content entry...")#Opens up before nano
         print()
